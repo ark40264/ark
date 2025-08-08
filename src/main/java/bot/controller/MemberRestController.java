@@ -37,6 +37,7 @@ public class MemberRestController {
 	@PostMapping
 	public void postMember(@RequestBody AllianceMemberForm allianceMemberForm) {
 		ModelMapper modelMapper = new ModelMapper();
+		allianceMemberForm.setAyarabuId("mitsu");
 		AllianceMemberDto allianceMemberDto = modelMapper.map(allianceMemberForm, AllianceMemberDto.class);
 		allianceMemberDto.setId(null);
 		allianceMemberDto.setCreateDate(ArkApplication.sdf.format(new Date()));
