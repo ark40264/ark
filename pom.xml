@@ -75,30 +75,30 @@
 			<artifactId>hibernate-community-dialects</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.xerial</groupId>
-			<artifactId>sqlite-jdbc</artifactId>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>net.dv8tion</groupId>
 			<artifactId>JDA</artifactId>
 			<version>5.6.1</version>
 		</dependency>
-<!--		<dependency>-->
-<!--			<groupId>org.eclipse.jgit</groupId>-->
-<!--			<artifactId>org.eclipse.jgit</artifactId>-->
-<!--			<version>7.3.0.202506031305-r</version>-->
-<!--		</dependency>-->
+		<!--		<dependency>-->
+		<!--			<groupId>org.eclipse.jgit</groupId>-->
+		<!--			<artifactId>org.eclipse.jgit</artifactId>-->
+		<!--			<version>7.3.0.202506031305-r</version>-->
+		<!--		</dependency>-->
 		<dependency>
 			<groupId>org.modelmapper</groupId>
 			<artifactId>modelmapper</artifactId>
 			<version>3.2.4</version>
 		</dependency>
 
-<!--		<dependency>-->
-<!--			<groupId>org.mockito</groupId>-->
-<!--			<artifactId>mockito-core</artifactId>-->
-<!--			<scope>test</scope>-->
-<!--		</dependency>-->
+		<!--		<dependency>-->
+		<!--			<groupId>org.mockito</groupId>-->
+		<!--			<artifactId>mockito-core</artifactId>-->
+		<!--			<scope>test</scope>-->
+		<!--		</dependency>-->
 
 	</dependencies>
 

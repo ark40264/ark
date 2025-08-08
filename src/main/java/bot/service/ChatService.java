@@ -1,8 +1,11 @@
 package bot.service;
 
-import java.time.format.DateTimeFormatter;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,6 +21,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import bot.ArkApplication;
 import bot.dto.AllianceMemberDto;
 import bot.dto.ChatAttachmentDto;
 import bot.dto.ChatMessageDto;
@@ -81,8 +85,11 @@ public class ChatService implements DIscordEventListener {
 			// 現在は channel_master_id が使われている
 
 			ChatMessage chatMessage = new ChatMessage();
-			chatMessage
-					.setCreateDate(message.getTimeCreated().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")));
+			ZoneId zone = ZoneId.of("Etc/GMT+9");
+			ZonedDateTime zonedDateTime = message.getTimeCreated().atZoneSameInstant(zone);
+			Instant instant = zonedDateTime.toInstant();
+			Date date = Date.from(instant);
+			chatMessage.setCreateDate(ArkApplication.sdf.format(date));
 			chatMessage.setDiscordMessageId(message.getId());
 			chatMessage.setMessage(message.getContentDisplay().replace("\n", "<br>"));
 			chatMessage.setName(getName(message.getMember()));

@@ -1,14 +1,17 @@
 package bot.model.discord;
 
-import java.time.format.DateTimeFormatter;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
 import bot.ArkApplication;
@@ -94,9 +97,12 @@ public class DiscordModel extends ListenerAdapter {
 				Thread.sleep(5000L);
 			} catch (InterruptedException e) {
 			}
-			Optional<ChatMessage> optional = chatMessageRepository.findById(1);
-			if (!optional.isEmpty()) {
-				messageId = optional.get().getDiscordMessageId();
+		    PageRequest pageable = PageRequest.of(0, 1000);
+		    Page<ChatMessage> page = chatMessageRepository.findByChannelMasterId(channel.getId(), pageable);
+		    List<ChatMessage> list = page.getContent();
+		    
+			if (!list.isEmpty()) {
+				messageId = list.getFirst().getDiscordMessageId();
 				discordBot.getChannel(channel.getChannelId()).getHistoryBefore(messageId, limit).queue(
 						history -> {
 							messageList = history.getRetrievedHistory();
@@ -159,8 +165,11 @@ public class DiscordModel extends ListenerAdapter {
 
 		ChatMessageDto chatMessageDto = new ChatMessageDto();
 		chatMessageDto.setChatAttachmentDtoList(attachmentDtoList);
-		chatMessageDto.setCreateDate(
-				discoMessage.getTimeCreated().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")));
+		ZoneId zone = ZoneId.of("Etc/GMT+9");
+		ZonedDateTime zonedDateTime = discoMessage.getTimeCreated().atZoneSameInstant(zone);
+		Instant instant = zonedDateTime.toInstant();
+		Date date = Date.from(instant);
+		chatMessageDto.setCreateDate(ArkApplication.sdf.format(date));
 		chatMessageDto.setDiscordMessageId(discoMessage.getId());
 		chatMessageDto.setMessage(message);
 		chatMessageDto.setName(getName(member));
