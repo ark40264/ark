@@ -259,7 +259,7 @@ async function fetchAndDisplayChatMessage(
 		loadingMoreIndicator.innerHTML = "ロード中...";
 	}
 	const response = await axios.get<ChatMessageDto[]>(
-		`/chat/pageable?page=${page}&size=${size}&channelId=${channelId}`
+		`/chat/pageable?page=${page}&size=${size}&channelId=${channelId}&sort=id,DESC`
 	);
 	const chatMessages: ChatMessageDto[] = response.data; // 取得したデータ
 
