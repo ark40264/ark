@@ -207,7 +207,7 @@ public class ChatService implements DIscordEventListener {
 			chatMessageDto.setChatAttachmentDtoList(chatAttachmentDtoList);
 			chatMessageDtoList.add(chatMessageDto);
 		}
-		chatMessageDtoList.sort(Comparator.comparing(ChatMessageDto::getDiscordMessageId).reversed());
+		chatMessageDtoList.sort(Comparator.comparing(ChatMessageDto::getId).reversed());
 
 		return chatMessageDtoList;
 	}
