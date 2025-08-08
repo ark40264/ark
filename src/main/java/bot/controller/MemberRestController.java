@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import ark.ArkApplication;
+import bot.ArkApplication;
 import bot.dto.AllianceMemberDto;
 import bot.form.AllianceMemberForm;
 import bot.service.MemberService;

@@ -1,4 +1,4 @@
-package ark;
+package bot;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 

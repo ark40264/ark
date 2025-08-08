@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import ark.ArkApplication;
+import bot.ArkApplication;
 import bot.dto.AllianceMemberDto;
 import bot.dto.ChatMessageDto;
 import bot.dto.MemberAlliance;
