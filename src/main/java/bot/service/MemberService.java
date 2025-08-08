@@ -93,12 +93,17 @@ public class MemberService implements DIscordEventListener {
 
 	@Transactional
 	public void addOrChangeAllianceMemberDto(AllianceMemberDto allianceMemberDto) {
-		// TODO 起動時DBにいてdiscoにいない場合は消す？
+		AllianceMember allianceMember;
 
-		String discordMemberId = allianceMemberDto.getDiscordMemberId();
-		AllianceMember allianceMember = allianceMemberRepository.findByDiscordMemberId(allianceMemberDto.getDiscordMemberId());
-		if (discordMemberId==null || discordMemberId.equals("") || allianceMember == null) {
-			allianceMember = allianceMemberRepository.findByAyarabuName(allianceMemberDto.getAyarabuName());
+		allianceMember = allianceMemberRepository.findByAyarabuName(allianceMemberDto.getAyarabuName());
+		if (allianceMember == null) {
+			String discordMemberId = allianceMemberDto.getDiscordMemberId();
+			if (discordMemberId==null || discordMemberId.equals("")) {
+				allianceMember = null;
+			} else {
+				allianceMember = allianceMemberRepository.findByDiscordMemberId(allianceMemberDto.getDiscordMemberId());
+			}
+			
 			if (allianceMember == null) {
 				allianceMember = toEntityFromDto(allianceMemberDto);
 				allianceMember = allianceMemberRepository.save(allianceMember);
