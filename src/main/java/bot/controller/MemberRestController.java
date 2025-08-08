@@ -25,7 +25,7 @@ import bot.service.MemberService;
 @RestController
 @RequestMapping(value = "/member", produces = MediaType.APPLICATION_JSON_VALUE)
 public class MemberRestController {
-	private static final Logger log = LoggerFactory.getLogger(MemberRestController.class);
+	Logger log = LoggerFactory.getLogger(MemberRestController.class);
 	@Autowired
 	private MemberService memberService;
 
@@ -36,7 +36,6 @@ public class MemberRestController {
 
 	@PostMapping
 	public void postMember(@RequestBody AllianceMemberForm allianceMemberForm) {
-		log.info("メンバー追加="+allianceMemberForm);
 		ModelMapper modelMapper = new ModelMapper();
 		AllianceMemberDto allianceMemberDto = modelMapper.map(allianceMemberForm, AllianceMemberDto.class);
 		allianceMemberDto.setId(null);
@@ -46,14 +45,12 @@ public class MemberRestController {
 	
 	@PutMapping
 	public void putMember(@RequestBody AllianceMemberForm allianceMemberForm) {
-//		log.info("メンバー更新="+allianceMemberForm);
 		ModelMapper modelMapper = new ModelMapper();
 		memberService.updateAllianceMemberDto(modelMapper.map(allianceMemberForm, AllianceMemberDto.class));
 	}
 
 	@DeleteMapping("/{id}")
 	public void deleteMember(@PathVariable Integer id) {
-		log.info("メンバー削除="+id);
 		memberService.removeAllianceMemberDto(id);
 	}
 

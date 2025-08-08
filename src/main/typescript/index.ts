@@ -188,7 +188,7 @@ async function onAddMember(): Promise<void> {
 		memberRole: "MEMBER",
 		discordMemberId: "",
 		discordName: "",
-		ayarabuId: "",
+		ayarabuId: "mitsu",
 		ayarabuName: ayarabuInput.value,
 		alliance: "NONE",
 		statementCount: 0,
@@ -406,8 +406,8 @@ interface Member {
 async function fetchAndDisplayMember(): Promise<void> {
 	const response = await axios.get<Member[]>(`/member`);
 	const members: Member[] = response.data; // 取得したデータ
-	const memberRoles: string[] = ["LEADER", "SUB_LEADER", "MEMBER"];
-	const memberAlliance: string[] = ["HOKKORI", "HONTO_HOKKORI", "NONE"];
+	const memberRoles: string[] = ["LEADER", "MEMBER"];
+	const memberAlliance: string[] = ["MITSU", "FANZA", "NONE"];
 
 	const memberTable = document.querySelector(
 		"#memberTable tbody"

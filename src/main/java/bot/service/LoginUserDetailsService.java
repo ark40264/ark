@@ -21,14 +21,18 @@ public class LoginUserDetailsService implements UserDetailsService {
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		log.error("✩✩ username=" + username);
+		log.info("login username=" + username);
 		if (username == null || username.isEmpty()) {
 			throw new UsernameNotFoundException("ユーザー名が空です。");
 		}
 
-		AllianceMember allianceMember = allianceMemberRepository.findByAyarabuName(username);
+		AllianceMember allianceMember;
+		allianceMember = allianceMemberRepository.findByAyarabuName(username);
 		if (allianceMember == null) {
-			throw new UsernameNotFoundException("アカウントが見つかりませんでした。");
+			allianceMember = allianceMemberRepository.findByDiscordName(username);
+			if (allianceMember == null) {
+				throw new UsernameNotFoundException("アカウントが見つかりませんでした。");
+			}
 		}
 		return new User(allianceMember.getAyarabuName(), allianceMember.getAyarabuId(),
 				AuthorityUtils.createAuthorityList(allianceMember.getMemberRole()));

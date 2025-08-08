@@ -50,7 +50,6 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<!--			<version>${lombok.version}</version>-->
 			<optional>true</optional>
 		</dependency>
 		<dependency>
@@ -84,22 +83,22 @@
 			<artifactId>JDA</artifactId>
 			<version>5.6.1</version>
 		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jgit</groupId>
-			<artifactId>org.eclipse.jgit</artifactId>
-			<version>7.3.0.202506031305-r</version>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>org.eclipse.jgit</groupId>-->
+<!--			<artifactId>org.eclipse.jgit</artifactId>-->
+<!--			<version>7.3.0.202506031305-r</version>-->
+<!--		</dependency>-->
 		<dependency>
 			<groupId>org.modelmapper</groupId>
 			<artifactId>modelmapper</artifactId>
 			<version>3.2.4</version>
 		</dependency>
 
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-core</artifactId>
-			<scope>test</scope>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>org.mockito</groupId>-->
+<!--			<artifactId>mockito-core</artifactId>-->
+<!--			<scope>test</scope>-->
+<!--		</dependency>-->
 
 	</dependencies>
 

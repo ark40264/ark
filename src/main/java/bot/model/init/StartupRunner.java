@@ -9,8 +9,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import bot.model.discord.DiscordModel;
-import bot.repository.ChatAttachmentRepository;
-import bot.repository.ChatMessageRepository;
 import bot.service.ChatService;
 import bot.service.MemberService;
 import bot.util.discord.DiscordBot;
@@ -26,10 +24,6 @@ public class StartupRunner implements CommandLineRunner {
 	public DiscordModel discordModel;
 	@Autowired
 	private MemberService memberService;
-	@Autowired
-	private ChatMessageRepository chatMessageRepository;
-	@Autowired
-	private ChatAttachmentRepository chatAttachmentRepository;
 
 	@Override
 	public void run(String... args) throws Exception {
@@ -39,6 +33,7 @@ public class StartupRunner implements CommandLineRunner {
 			discordBot.init(discordModel);
 			discordModel.initDiscordMember();
 			chatService.init();
+			Thread.sleep(5000);
 			discordModel.getHistory(100);
 
 		} catch (Exception e) {

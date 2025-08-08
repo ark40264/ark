@@ -120,7 +120,6 @@ public class MemberService implements DIscordEventListener {
 
 	@Transactional
 	public void removeAllianceMemberDtoByDiscordId(AllianceMemberDto allianceMemberDto) {
-		AllianceMemberDto removeDto = getAllianceMemberDto(allianceMemberDto.getDiscordMemberId());
 		AllianceMember allianceMember = allianceMemberRepository.findByDiscordMemberId(
 				allianceMemberDto.getDiscordMemberId());
 

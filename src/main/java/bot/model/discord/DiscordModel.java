@@ -2,6 +2,7 @@ package bot.model.discord;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -10,9 +11,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import bot.ArkApplication;
 import bot.dto.AllianceMemberDto;
 import bot.dto.ChatAttachmentDto;
 import bot.dto.ChatMessageDto;
+import bot.dto.MemberAlliance;
+import bot.dto.MemberRole;
 import bot.entity.ChatMessage;
 import bot.repository.ChannelMasterRepository;
 import bot.repository.ChatMessageRepository;
@@ -211,7 +215,15 @@ public class DiscordModel extends ListenerAdapter {
 	public void onGuildMemberJoin(GuildMemberJoinEvent event) {
 		try {
 			Member member = event.getMember();
-			AllianceMemberDto allianceMemberDto = memberService.getAllianceMemberDto(member.getId());
+			AllianceMemberDto allianceMemberDto = new AllianceMemberDto();
+			allianceMemberDto.setAlliance(MemberAlliance.NONE);
+			allianceMemberDto.setAyarabuId("mitsu");
+			allianceMemberDto.setAyarabuName(getName(member));
+			allianceMemberDto.setBot(false);
+			allianceMemberDto.setCreateDate(ArkApplication.sdf.format(new Date()));
+			allianceMemberDto.setDiscordName(getName(member));
+			allianceMemberDto.setMemberRole(MemberRole.MEMBER);
+			allianceMemberDto.setStatementCount(0);
 			for (DIscordEventListener dIscordEventListener : dIscordEventListenerList) {
 				dIscordEventListener
 						.onGuildMemberJoin(allianceMemberDto);
