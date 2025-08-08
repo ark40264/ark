@@ -14,7 +14,6 @@ import bot.dto.ChatMessageDto;
 import bot.util.prop.AppriCationProperties;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
@@ -28,7 +27,6 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy;
 public class DiscordBot {
 	Logger log = LoggerFactory.getLogger(DiscordBot.class);
 	private JDA jda;
-	private Guild guild;
 	@Autowired
 	private AppriCationProperties appriCationProperties;
 
@@ -40,14 +38,13 @@ public class DiscordBot {
 					.enableIntents(GatewayIntent.MESSAGE_CONTENT)
 					.enableIntents(GatewayIntent.GUILD_MESSAGES)
 					.enableIntents(GatewayIntent.GUILD_MEMBERS)
-					.setActivity(Activity.playing("ステータス"))
 					.build();
 			jda.addEventListener(listenerAdapter);
 
 			jda.updateCommands().queue();
 			jda.awaitReady();
 
-			guild = jda.getGuildById(appriCationProperties.getGuildId());
+//			guild = jda.getGuildById(appriCationProperties.getGuildId());
 		} catch (Exception e) {
 			throw new RuntimeException("DiscordBot初期化エラー.", e);
 		}
@@ -67,11 +64,11 @@ public class DiscordBot {
 	}
 
 	public Guild getGuild() {
-		return guild;
+		return jda.getGuildById(appriCationProperties.getGuildId());
 	}
 
 	public TextChannel getChannel(String channelId) {
-		return guild.getTextChannelById(channelId);
+		return getGuild().getTextChannelById(channelId);
 	}
 
 	public void sendMessage(ChatMessageDto chatMessageDto, List<AllianceMemberDto> allianceMemberDtoList) {
