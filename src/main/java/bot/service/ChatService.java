@@ -189,6 +189,23 @@ public class ChatService implements DIscordEventListener {
 
 	@Override
 	public void onMessageUpdate(ChatMessageDto chatMessageDto) {
+		ModelMapper modelMapper = new ModelMapper();
+		ChatMessage chatMessage = modelMapper.map(chatMessageDto, ChatMessage.class);
+		chatMessage.setChannelMasterId(chatMessageDto.getId());
+		ChatMessage savedChatMessage = chatMessageRepository.save(chatMessage);
+		chatMessageDto.setId(savedChatMessage.getId());
+
+		if (chatMessageDto.getChatAttachmentDtoList().size() != 0) {
+			chatMessageDto.getChatAttachmentDtoList().forEach((chatAttachmentDto) -> {
+				ChatAttachment chatAttachment = new ChatAttachment();
+				chatAttachment.setAttachmentUrl(chatAttachmentDto.getAttachmentUrl());
+				chatAttachment.setChatMessage(chatMessage);
+				chatAttachment.setAttachmentFileName(chatAttachmentDto.getAttachmentFileName());
+				savedChatMessage.getChatAttachmentList().add(chatAttachment);
+				chatAttachmentRepository.save(chatAttachment);
+			});
+		}
+
 	}
 
 	public List<ChatMessageDto> getChatMessageDtoList(String channelId) {
@@ -224,6 +241,7 @@ public class ChatService implements DIscordEventListener {
 
 	@Override
 	public void onMessageDelete(String messageId) {
+		chatMessageRepository.deleteByDiscordMessageId(messageId);
 	}
 
 	@Override

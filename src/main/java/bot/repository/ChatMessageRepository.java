@@ -14,4 +14,5 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Intege
 	public ChatMessage findByDiscordMessageId(String discordMessageId);
 	public List<ChatMessage> findAllByOrderByIdDesc();
 	public Page<ChatMessage> findByChannelMasterId(Integer channelId, Pageable pageable);
+	public void deleteByDiscordMessageId(String discordMessageId);
 }
