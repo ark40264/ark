@@ -10,6 +10,4 @@ import lombok.Data;
 public class AppriCationProperties {
 	@Value("${discord.guild-id}")
 	private String guildId;
-	@Value("${github.repository-name}")
-	private String githubRepositoryName;
 }

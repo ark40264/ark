@@ -3,6 +3,7 @@ package bot;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -10,6 +11,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 
 import bot.dto.MemberRole;
 import bot.service.LoginUserDetailsService;
@@ -38,7 +40,7 @@ public class SecurityConfig {
 		String SUB_LEADER = MemberRole.SUB_LEADER.toString();
 		http
 				.authorizeHttpRequests(authorize -> authorize
-						.requestMatchers("/", "/css/**", "/js/**").permitAll()
+						.requestMatchers("/", "/css/**", "/js/**", "/img/**").permitAll()
 						.requestMatchers("/memberHtml/**")
 						.hasAnyAuthority(LEADER, SUB_LEADER)
 						.anyRequest().authenticated())
@@ -56,8 +58,11 @@ public class SecurityConfig {
 						.rememberMeParameter("remember-me")
 						.tokenValiditySeconds(60 * 60 * 24 * 700))
 				.logout(logout -> logout
-						.logoutSuccessUrl("/loginForm")
-						.permitAll());
+						.logoutRequestMatcher(PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.GET, "/logout"))
+		                .logoutSuccessUrl("/loginForm") // ログアウト成功後のリダイレクト先
+		                .deleteCookies("JSESSIONID")
+		                .permitAll()
+		            );
 		return http.build();
 	}
 

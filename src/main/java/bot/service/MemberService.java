@@ -85,6 +85,8 @@ public class MemberService implements DIscordEventListener {
 	}
 
 	private AllianceMemberDto toDtoFromEntity(AllianceMember allianceMember) {
+		if (allianceMember == null)
+			return null;
 		ModelMapper modelMapper = new ModelMapper();
 		return modelMapper.map(allianceMember, AllianceMemberDto.class);
 	}

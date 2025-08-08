@@ -19,7 +19,6 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import net.dv8tion.jda.api.utils.FileUpload;
@@ -85,9 +84,6 @@ public class DiscordBot {
 		String replaceMessage = addMention(allianceMemberDtoList, message);
 
 		MessageCreateAction messageCreateAction = addAttachment(chatMessageDto, replaceMessage);
-		
-		Button myButton = Button.primary("open-form-button", "OK");
-		messageCreateAction.addActionRow(myButton);
 		
 		messageCreateAction.queue();
 	}

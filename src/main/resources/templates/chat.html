@@ -6,15 +6,15 @@
 	<script type="module" src="/js/main.js"></script>
 	<meta name="_csrf" th:content="${_csrf.token}"/>
 	<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
-<!--	<link rel="stylesheet" href="/css/style.css">-->
+	<link rel="stylesheet" href="/css/ark.css">
 </head>
 
 <body id="bodyContainer">
-
+	<div class="logout"><a href="/logout">ログアウト</a></div>
 	<h1 th:text="${channelName}+チャットの一覧"></h1>
 	<input type="hidden" id="channelId" th:value="${channelId}">
 	<form>
-		名前：<input type="text" id="name"><br>
+		名前：<input type="text" id="name" th:value="${name}"><br>
 		<textarea id="message"></textarea><br>
 		引用元：<input type="button" id="referencedMessageId" name="multipartFiles"><br>
 		ファイル：<input type="file" id="multipartFile" multiple><br>
