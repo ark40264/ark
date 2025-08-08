@@ -95,8 +95,9 @@ public class MemberService implements DIscordEventListener {
 	public void addOrChangeAllianceMemberDto(AllianceMemberDto allianceMemberDto) {
 		// TODO 起動時DBにいてdiscoにいない場合は消す？
 
+		String discordMemberId = allianceMemberDto.getDiscordMemberId();
 		AllianceMember allianceMember = allianceMemberRepository.findByDiscordMemberId(allianceMemberDto.getDiscordMemberId());
-		if (allianceMember == null) {
+		if (discordMemberId==null || discordMemberId.equals("") || allianceMember == null) {
 			allianceMember = allianceMemberRepository.findByAyarabuName(allianceMemberDto.getAyarabuName());
 			if (allianceMember == null) {
 				allianceMember = toEntityFromDto(allianceMemberDto);
@@ -107,14 +108,14 @@ public class MemberService implements DIscordEventListener {
 				allianceMember = toEntityFromDto(allianceMemberDto);
 				allianceMember.setId(id);
 				allianceMember = allianceMemberRepository.save(allianceMember);
-				log.info("メンバー更新:" + allianceMemberDto);
+				log.info("メンバー更新1:" + allianceMemberDto);
 			}
 		} else {
 			int id = allianceMember.getId();
 			allianceMember = toEntityFromDto(allianceMemberDto);
 			allianceMember.setId(id);
 			allianceMember = allianceMemberRepository.save(allianceMember);
-			log.info("メンバー更新:" + allianceMemberDto);
+			log.info("メンバー更新2:" + allianceMemberDto);
 		}
 	}
 
