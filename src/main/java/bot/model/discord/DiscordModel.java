@@ -87,7 +87,7 @@ public class DiscordModel extends ListenerAdapter {
 			sendMessage(chatMessageDto);
 			// TODO 気に食わない
 			try {
-				Thread.sleep(1000L);
+				Thread.sleep(5000L);
 			} catch (InterruptedException e) {
 			}
 			Optional<ChatMessage> optional = chatMessageRepository.findById(1);
