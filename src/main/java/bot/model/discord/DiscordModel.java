@@ -165,7 +165,7 @@ public class DiscordModel extends ListenerAdapter {
 
 		ChatMessageDto chatMessageDto = new ChatMessageDto();
 		chatMessageDto.setChatAttachmentDtoList(attachmentDtoList);
-		ZoneId zone = ZoneId.of("Etc/GMT+1");
+		ZoneId zone = ZoneId.of("Etc/GMT+16");
 		ZonedDateTime zonedDateTime = discoMessage.getTimeCreated().atZoneSameInstant(zone);
 		Instant instant = zonedDateTime.toInstant();
 		Date date = Date.from(instant);

@@ -40,7 +40,7 @@ public class SecurityConfig {
 		String SUB_LEADER = MemberRole.SUB_LEADER.toString();
 		http
 				.authorizeHttpRequests(authorize -> authorize
-						.requestMatchers("/", "/css/**", "/js/**", "/img/**").permitAll()
+						.requestMatchers("/","/h2-console/**", "/css/**", "/js/**", "/img/**").permitAll()
 						.requestMatchers("/memberHtml/**")
 						.hasAnyAuthority(LEADER, SUB_LEADER)
 						.anyRequest().authenticated())
@@ -51,6 +51,10 @@ public class SecurityConfig {
 						.loginPage("/loginForm")
 						.failureHandler(botAuthenticationFailureHandler)
 						.usernameParameter("ayarabuName").passwordParameter("ayarabuId"))
+				.csrf(csrf -> csrf
+		                // H2コンソールへのパスに対してCSRF保護を無効にする
+		                .ignoringRequestMatchers("/h2-console/**")
+		            )
 				.rememberMe(rememberMe -> rememberMe
 						.key("secret_key")
 						.rememberMeServices(
