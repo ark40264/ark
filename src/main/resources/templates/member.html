@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>メンバー一覧</title>
+	<script type="module" src="./js/main.js"></script>
+	<meta name="_csrf" th:content="${_csrf.token}" />
+	<meta name="_csrf_header" th:content="${_csrf.headerName}" />
+</head>
+
+<body>
+	<input type="hidden" id="channelId" th:value="-1">
+	<h1>メンバー一覧</h1>
+	<table id="memberTable">
+		<thead>
+			<tr>
+				<th>ID</th>
+				<th>ロール</th>
+				<th>DiscordメンバーId</th>
+				<th>Discordの名前</th>
+				<th>あやらぶID</th>
+				<th>あやらぶの名前</th>
+				<th>同盟</th>
+				<th>発言回数</th>
+				<th>登録日</th>
+			</tr>
+		</thead>
+		<tbody>
+		</tbody>
+	</table>
+	<input type="button" id="saveButton" value="save">
+	<hr>
+	<form>
+		ID:<input type="text" id="deleteInput"><input type="button" id="deleteButton" value="メンバー削除">
+	</form>
+	<form>
+		あやらぶ名:<input type="text" id="ayarabuInput"><input type="button" id="addButton" value="メンバー登録">
+	</form>
+	<br>
+	<hr>
+	<input type="button" id="fightingStrengthDownloadButton" value="戦力エクセルファイルダウンロード">
+	<br>
+	<hr>
+	<form>
+		エクセルファイル：<input type="file" id="fightingStrengthFile"><br>
+		<input type="button" id="fightingStrengthUploadButton" value="アップロード"><br>
+	</form>
+	<br>
+	<hr>
+	<input type="button" id="fightingStrengthInitButton" value="戦力初期化">
+<br>
+</body>
+
+</html>

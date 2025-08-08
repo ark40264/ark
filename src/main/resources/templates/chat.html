@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title th:text="${channelName}+チャットの一覧"></title>
+	<script type="module" src="/js/main.js"></script>
+	<meta name="_csrf" th:content="${_csrf.token}"/>
+	<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+<!--	<link rel="stylesheet" href="/css/style.css">-->
+</head>
+
+<body id="bodyContainer">
+
+	<h1 th:text="${channelName}+チャットの一覧"></h1>
+	<input type="hidden" id="channelId" th:value="${channelId}">
+	<form>
+		名前：<input type="text" id="name"><br>
+		<textarea id="message"></textarea><br>
+		引用元：<input type="button" id="referencedMessageId" name="multipartFiles"><br>
+		ファイル：<input type="file" id="multipartFile" multiple><br>
+		<input type="button" id="button" value="送信"><br>
+	</form>
+	<hr>
+	<div id="chatMessageContainer">
+	</div>
+	<div id="loading-indicator">
+	</div>
+
+</body>
+
+</html>
