@@ -85,7 +85,7 @@ public class ChatService implements DIscordEventListener {
 			// 現在は channel_master_id が使われている
 
 			ChatMessage chatMessage = new ChatMessage();
-			ZoneId zone = ZoneId.of("Etc/GMT+16");
+			ZoneId zone = ZoneId.of("America/New_York");
 			ZonedDateTime zonedDateTime = message.getTimeCreated().atZoneSameInstant(zone);
 			Instant instant = zonedDateTime.toInstant();
 			Date date = Date.from(instant);
