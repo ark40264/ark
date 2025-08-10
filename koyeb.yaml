@@ -1,0 +1,13 @@
+name: ark
+services:
+  - name: app
+    git: github.com/ark40264/ark
+    ports:
+      # アプリケーション本体のためのHTTPポート
+      - port: 8000 # Spring Bootがリッスンするポート
+        protocol: http
+        path: /
+
+      # H2データベースのためのTCPポート
+      - port: 9092
+        protocol: tcp

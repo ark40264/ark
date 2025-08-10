@@ -50,6 +50,11 @@ public class ChatService implements DIscordEventListener {
 	private ChatAttachmentRepository chatAttachmentRepository;
 	@Autowired
 	private ChatMessageRepository chatMessageRepository;
+	private ModelMapper modelMapper;
+	
+	public ChatService() {
+		modelMapper = new ModelMapper();
+	}
 
 	@Transactional
 	public void init() {
@@ -188,12 +193,14 @@ public class ChatService implements DIscordEventListener {
 		}
 
 	@Override
+	@Transactional
 	public void onMessageUpdate(ChatMessageDto chatMessageDto) {
-		ModelMapper modelMapper = new ModelMapper();
+		Optional<ChatMessage> optional = chatMessageRepository.findById(chatMessageDto.getId());
+		if (optional.isEmpty())
+			return;
 		ChatMessage chatMessage = modelMapper.map(chatMessageDto, ChatMessage.class);
-		chatMessage.setChannelMasterId(chatMessageDto.getId());
-		ChatMessage savedChatMessage = chatMessageRepository.save(chatMessage);
-		chatMessageDto.setId(savedChatMessage.getId());
+		chatMessageRepository.save(chatMessage);
+		chatMessageDto.setId(chatMessage.getId());
 
 		if (chatMessageDto.getChatAttachmentDtoList().size() != 0) {
 			chatMessageDto.getChatAttachmentDtoList().forEach((chatAttachmentDto) -> {
@@ -201,11 +208,10 @@ public class ChatService implements DIscordEventListener {
 				chatAttachment.setAttachmentUrl(chatAttachmentDto.getAttachmentUrl());
 				chatAttachment.setChatMessage(chatMessage);
 				chatAttachment.setAttachmentFileName(chatAttachmentDto.getAttachmentFileName());
-				savedChatMessage.getChatAttachmentList().add(chatAttachment);
+				chatMessage.getChatAttachmentList().add(chatAttachment);
 				chatAttachmentRepository.save(chatAttachment);
 			});
 		}
-
 	}
 
 	public List<ChatMessageDto> getChatMessageDtoList(String channelId) {
@@ -240,8 +246,9 @@ public class ChatService implements DIscordEventListener {
 	}
 
 	@Override
-	public void onMessageDelete(String messageId) {
-		chatMessageRepository.deleteByDiscordMessageId(messageId);
+	@Transactional
+	public void onMessageDelete(String discordMessageId) {
+		chatMessageRepository.deleteByDiscordMessageId(discordMessageId);
 	}
 
 	@Override
