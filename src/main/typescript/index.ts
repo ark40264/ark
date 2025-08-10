@@ -303,10 +303,13 @@ async function fetchAndDisplayChatMessage(
 				const a = document.createElement("a");
 				a.href = chatAttachmentDto.attachmentUrl;
 				if (chatAttachmentDto.attachmentUrl.match(".jpg|.png|.JPG|.PNG") != null) {
-					const img = document.createElement("img") as HTMLImageElement;
-					img.src = chatAttachmentDto.attachmentUrl;
-					img.width = 300;
-					a.appendChild(img);
+					const divEle = document.createElement("div")as HTMLDivElement;
+					divEle.innerHTML = `
+						<a href="${chatAttachmentDto.attachmentUrl}" data-lightbox="image-1" data-title="title" data-alt="alt">
+						<img src="${chatAttachmentDto.attachmentUrl}" width=300>
+						</a>
+					    `;
+					main.appendChild(divEle);
 				} else {
 					const p = document.createElement("p") as HTMLElement;
 					p.textContent = "リンク";
