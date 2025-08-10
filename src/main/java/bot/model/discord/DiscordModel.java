@@ -60,7 +60,7 @@ public class DiscordModel extends ListenerAdapter {
 	private ChannelMasterRepository channelRepository;
 	private List<DIscordEventListener> dIscordEventListenerList = new ArrayList<DIscordEventListener>();
 
-	private List<String> channelIdList;
+	private List<String> channelIdList = new ArrayList<String>();
 
 	public void initDiscordMember() {
 		discordBot.getGuild().loadMembers().onSuccess(members -> {
