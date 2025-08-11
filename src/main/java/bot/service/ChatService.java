@@ -195,6 +195,8 @@ public class ChatService implements DIscordEventListener {
 	@Override
 	@Transactional
 	public void onMessageUpdate(ChatMessageDto chatMessageDto) {
+		if (chatMessageDto.getId() == null)
+			return;
 		Optional<ChatMessage> optional = chatMessageRepository.findById(chatMessageDto.getId());
 		if (optional.isEmpty())
 			return;
@@ -248,6 +250,8 @@ public class ChatService implements DIscordEventListener {
 	@Override
 	@Transactional
 	public void onMessageDelete(String discordMessageId) {
+		if (discordMessageId == null)
+			return;
 		chatMessageRepository.deleteByDiscordMessageId(discordMessageId);
 	}
 
