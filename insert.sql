@@ -2,3 +2,4 @@ insert into channel_master (channel_id, channel_name) values ('12867532669858611
 insert into channel_master (channel_id, channel_name) values ('1286759459242381433','アクレコ雑談');
 insert into channel_master (channel_id, channel_name) values ('1286758991875276880','傭兵団戦会議室');
 
+
