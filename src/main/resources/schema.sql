@@ -1,10 +1,13 @@
 
 /* Drop Tables */
 
+DROP TABLE IF EXISTS chat_message_view;
+DROP TABLE IF EXISTS fighting_strength;
 DROP TABLE IF EXISTS alliance_member;
 DROP TABLE IF EXISTS chat_attachment;
 DROP TABLE IF EXISTS chat_message;
 DROP TABLE IF EXISTS channel_master;
+DROP TABLE IF EXISTS level_master;
 
 
 
@@ -35,7 +38,8 @@ CREATE TABLE channel_master
 	id int NOT NULL AUTO_INCREMENT,
 	channel_name text,
 	channel_id text,
-	PRIMARY KEY (id)
+	PRIMARY KEY (id),
+	UNIQUE (id)
 );
 
 
@@ -45,7 +49,8 @@ CREATE TABLE chat_attachment
 	attachment_url text,
 	chat_message_id int NOT NULL,
 	attachment_file_name text,
-	PRIMARY KEY (id)
+	PRIMARY KEY (id),
+	UNIQUE (id)
 );
 
 
@@ -60,8 +65,30 @@ CREATE TABLE chat_message
 	create_date text,
 	channel_master_id int NOT NULL,
 	PRIMARY KEY (id),
+	UNIQUE (id),
 	UNIQUE (discord_message_id)
 );
+
+
+CREATE TABLE chat_message_view
+(
+	id int NOT NULL AUTO_INCREMENT,
+	channel_id text,
+	chat_message_id int,
+	member_id int NOT NULL,
+	PRIMARY KEY (id)
+);
+
+
+/* Create Foreign Keys */
+
+ALTER TABLE chat_message_view
+	ADD FOREIGN KEY (member_id)
+	REFERENCES alliance_member (id)
+	ON UPDATE RESTRICT
+	ON DELETE RESTRICT
+;
+
 
 ALTER TABLE chat_message
 	ADD FOREIGN KEY (channel_master_id)
@@ -77,3 +104,6 @@ ALTER TABLE chat_attachment
 	ON UPDATE RESTRICT
 	ON DELETE RESTRICT
 ;
+
+
+
