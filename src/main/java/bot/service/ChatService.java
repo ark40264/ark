@@ -144,6 +144,9 @@ public class ChatService implements DIscordEventListener {
 	}
 
 	private String getName(Member member) {
+		if (member == null) {
+			return "不明";
+		}
 		String nickname = member.getNickname();
 		String effectiveName = member.getEffectiveName();
 		if (nickname == null) {

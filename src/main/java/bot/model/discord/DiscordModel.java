@@ -133,6 +133,16 @@ public class DiscordModel extends ListenerAdapter {
 	@Override
 	public void onMessageReceived(MessageReceivedEvent event) {
 		try {
+			boolean flag = false;
+			for (String channelId : channelIdList) {
+				if (event.getChannel().getName().equals(channelId)) {
+					flag = true;
+					break;
+				}
+			}
+			if (flag == false) {
+				return;
+			}
 			ChatMessageDto chatMessageDto = createChatMessageDto(event, event.getMember(), event.getMessage());
 			for (DIscordEventListener dIscordEventListener : dIscordEventListenerList) {
 				dIscordEventListener
