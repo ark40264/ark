@@ -79,12 +79,12 @@ public class MemberService implements DIscordEventListener {
 		AllianceMemberDto allianceMemberDto = new AllianceMemberDto();
 		if (isBot) {
 			allianceMemberDto.setMemberRole(MemberRole.LEADER);
-			allianceMemberDto.setAyarabuId("ayarabu");
+			allianceMemberDto.setAyarabuId("mitsu");
 			allianceMemberDto.setAyarabuName(name);
 		} else {
 			allianceMemberDto.setMemberRole(MemberRole.MEMBER);
-			allianceMemberDto.setAyarabuId("");
-			allianceMemberDto.setAyarabuName("");
+			allianceMemberDto.setAyarabuId("mitsu");
+			allianceMemberDto.setAyarabuName(name);
 		}
 		allianceMemberDto.setBot(false);
 		allianceMemberDto.setCreateDate(ArkApplication.sdf.format(new Date()));
@@ -129,6 +129,7 @@ public class MemberService implements DIscordEventListener {
 			if (allianceMember == null) {
 				allianceMember = toEntityFromDto(allianceMemberDto);
 				allianceMember = allianceMemberRepository.save(allianceMember);
+				log.info("メンバー追加:" + allianceMember);
 
 				List<ChannelMaster> channelList = channelMasterRepository.findAll();
 				for (ChannelMaster channelMaster : channelList) {
@@ -139,7 +140,6 @@ public class MemberService implements DIscordEventListener {
 					chatMessageViewRepository.save(chatMessageView);
 				}
 
-				log.info("メンバー追加:" + allianceMemberDto);
 			} else {
 				int id = allianceMember.getId();
 				allianceMember = toEntityFromDto(allianceMemberDto);

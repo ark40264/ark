@@ -70,8 +70,7 @@ CREATE TABLE chat_message_view
 	channel_id text,
 	chat_message_id int,
 	member_id int NOT NULL,
-	PRIMARY KEY (id),
-	UNIQUE (member_id)
+	PRIMARY KEY (id)
 );
 
 ALTER TABLE chat_message
@@ -89,9 +88,3 @@ ALTER TABLE chat_attachment
 	ON DELETE RESTRICT
 ;
 
-ALTER TABLE chat_message_view
-	ADD FOREIGN KEY (member_id)
-	REFERENCES alliance_member (id)
-	ON UPDATE RESTRICT
-	ON DELETE RESTRICT
-;

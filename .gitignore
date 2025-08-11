@@ -32,5 +32,7 @@ build/
 
 
 node_modules
+h2.db.trace.db
+h2.db.mv.db
 
 

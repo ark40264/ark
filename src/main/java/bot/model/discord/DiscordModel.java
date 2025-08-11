@@ -135,7 +135,7 @@ public class DiscordModel extends ListenerAdapter {
 		try {
 			boolean flag = false;
 			for (String channelId : channelIdList) {
-				if (event.getChannel().getName().equals(channelId)) {
+				if (event.getChannel().getId().equals(channelId)) {
 					flag = true;
 					break;
 				}
@@ -215,7 +215,7 @@ public class DiscordModel extends ListenerAdapter {
 		try {
 			boolean flag = false;
 			for (String channelId : channelIdList) {
-				if (event.getChannel().getName().equals(channelId)) {
+				if (event.getChannel().getId().equals(channelId)) {
 					flag = true;
 					break;
 				}
@@ -239,7 +239,7 @@ public class DiscordModel extends ListenerAdapter {
 		try {
 			boolean flag = false;
 			for (String channelId : channelIdList) {
-				if (event.getChannel().getName().equals(channelId)) {
+				if (event.getChannel().getId().equals(channelId)) {
 					flag = true;
 					break;
 				}
