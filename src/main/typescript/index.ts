@@ -44,7 +44,7 @@ window.addEventListener("DOMContentLoaded", (event: Event) => {
 });
 
 function initIndex() {
-	existNewMessage();
+	setInterval(existNewMessage, 1000);
 }
 
 function initChat() {
@@ -52,7 +52,7 @@ function initChat() {
 	fetchAndDisplayChatMessage(false);
 	const button = document.getElementById("button") as HTMLInputElement;
 	button.onclick = onPostMessage;
-	//	setInterval(resetAndDisplayChatMessage, 5000);
+	setInterval(existNewMessageUpdateChat, 2000);
 }
 
 function initMember() {
@@ -85,18 +85,29 @@ async function existNewMessage(): Promise<void> {
 	const chatClasseElements = document.querySelectorAll<HTMLElement>('.chatClass');
 	const elementsArray = Array.from(chatClasseElements);
 	for (const htmlElement of elementsArray) {
+		const a :string = htmlElement.innerHTML; 
 		const channelId : string = htmlElement.dataset.channelId as string;
 		const url = "/chat/existNewMessage?channelId="+channelId;
 		const response = await axios.get(url, {
 		});
 		const isNew : Boolean = response.data;
+		htmlElement.style.color = "";
 		if (isNew) {
 			htmlElement.style.color = 'red';
-			const newEle = document.createElement("img") as HTMLImageElement;
-			newEle.src = "/img/new.png";
-			newEle.width = 30;
-			htmlElement.appendChild(newEle);
+			if (!a.includes("<img src=")) {
+				htmlElement.innerHTML = a + `<img src="/img/new.png" width=30>`;
+			}
 		}
+	}
+}
+async function existNewMessageUpdateChat(): Promise<void> {
+	
+	const url = "/chat/existNewMessage?channelId="+channelId;
+	const response = await axios.get(url, {
+	});
+	const isNew : Boolean = response.data;
+	if (isNew) {
+		fetchAndDisplayChatMessage(true);
 	}
 }
 
@@ -200,20 +211,19 @@ async function onSaveFightingStrength(): Promise<void> {
 
 }
 async function onAddMember(): Promise<void> {
-	const ayarabuNameInput = document.getElementById("ayarabuNameInput") as HTMLInputElement; // 変数名をdeleteInputからayarabuInputに修正
-	if (!ayarabuNameInput) { // 要素が存在しない場合のエラーを避ける
+	const ayarabuInput = document.getElementById("ayarabuInput") as HTMLInputElement; // 変数名をdeleteInputからayarabuInputに修正
+	if (!ayarabuInput) { // 要素が存在しない場合のエラーを避ける
 		console.error("ayarabuNameInput element not found.");
 		return;
 	}
-	const ayarabuIdInput = document.getElementById("ayarabuIdInput") as HTMLInputElement;
 	const allianceSelect = document.getElementById("allianceSelect") as HTMLSelectElement;
 	const memberData: AllianceMemberForm = {
 		id: -1, // 新規追加のため仮のID
 		memberRole: "MEMBER",
 		discordMemberId: "",
 		discordName: "",
-		ayarabuId: ayarabuIdInput.value,
-		ayarabuName: ayarabuNameInput.value,
+		ayarabuId: "mitsu",
+		ayarabuName: ayarabuInput.value,
 		alliance: allianceSelect.value,
 		statementCount: 0,
 		createDate: "",
@@ -329,7 +339,7 @@ async function fetchAndDisplayChatMessage(
 				if (chatAttachmentDto.attachmentUrl.match(".jpg|.png|.JPG|.PNG") != null) {
 					const divEle = document.createElement("div")as HTMLDivElement;
 					divEle.innerHTML = `
-						<a href="${chatAttachmentDto.attachmentUrl}" data-lightbox="image-1" data-title="title" data-alt="alt">
+						<a href="${chatAttachmentDto.attachmentUrl}" data-lightbox="image-1" data-title="" data-alt="alt">
 						<img src="${chatAttachmentDto.attachmentUrl}" width=300>
 						</a>
 					    `;

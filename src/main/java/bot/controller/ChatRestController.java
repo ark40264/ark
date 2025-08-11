@@ -11,8 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,14 +19,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import bot.ArkApplication;
-import bot.dto.AllianceMemberDto;
 import bot.dto.ChatAttachmentDto;
 import bot.dto.ChatMessageDto;
 import bot.dto.MessageSizeDto;
-import bot.entity.ChatMessageView;
 import bot.form.MessageForm;
 import bot.service.ChatService;
-import bot.service.MemberService;
 
 @RestController
 @RequestMapping(value = "/chat", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -36,47 +31,19 @@ public class ChatRestController {
 	private static final Logger log = LoggerFactory.getLogger(ChatRestController.class);
 	@Autowired
 	private ChatService chatService;
-	@Autowired
-	private MemberService memberService;
 
 	@GetMapping("/pageable")
 	public List<ChatMessageDto> getAllChatsPageable(@RequestParam String channelId,
 			@PageableDefault(size = 20) Pageable pageable) {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		String name = "";
-		if (authentication != null && authentication.isAuthenticated()) {
-			name = authentication.getName();
-		}
-		return chatService.getChatMessageDtoList(channelId, pageable, name);
+		return chatService.getChatMessageDtoList(channelId, pageable);
 	}
 
 	@GetMapping("/size")
 	public MessageSizeDto getSize(@RequestParam String channelId) {
 		MessageSizeDto messageSizeDto = new MessageSizeDto();
-//		messageSizeDto.setSize(chatService.getChatMessageDtoList(channelId).size());
+		messageSizeDto.setSize(chatService.getChatMessageDtoList(channelId).size());
 		return messageSizeDto;
 	}
-
-	@GetMapping("/existNewMessage")
-	public boolean existNewMessage(@RequestParam String channelId) {
-		boolean result = false;
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		String name = "";
-		if (authentication != null && authentication.isAuthenticated()) {
-			name = authentication.getName();
-		}
-		if (!name.isEmpty()) {
-			AllianceMemberDto allianceMemberDto = memberService.getAllianceMemberDtoByAyarabuName(name);
-			List<ChatMessageView> chatMessageViewList = allianceMemberDto.getChatMessageViewList();
-			for (ChatMessageView chatMessageView : chatMessageViewList) {
-				if (chatMessageView.getChannelId().equals(channelId)) {
-					result = chatService.existNewMessage(channelId, chatMessageView.getChatMessageId());
-				}
-			}
-		}
-		return result;
-	}
-
 
 	@PostMapping
 	public void postMessage(MessageForm messageForm) {

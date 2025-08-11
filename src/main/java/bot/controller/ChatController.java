@@ -19,13 +19,8 @@ public class ChatController {
 	@GetMapping("/chatHtml/{channelId}")
 	public String index(@PathVariable String channelId, Model model) {
 		ChannelMaster channel = channelRepository.findByChannelId(channelId);
-		if (channel == null) {
-			model.addAttribute("channelName", "");
-			model.addAttribute("channelId", "");
-		} else {
-			model.addAttribute("channelName", channel.getChannelName());
-			model.addAttribute("channelId", channelId);
-		}
+		model.addAttribute("channelName", channel.getChannelName());
+		model.addAttribute("channelId", channelId);
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
 		String name = "";

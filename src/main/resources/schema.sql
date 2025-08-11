@@ -1,7 +1,6 @@
 
 /* Drop Tables */
 
-DROP TABLE IF EXISTS chat_message_view;
 DROP TABLE IF EXISTS alliance_member;
 DROP TABLE IF EXISTS chat_attachment;
 DROP TABLE IF EXISTS chat_message;
@@ -64,15 +63,6 @@ CREATE TABLE chat_message
 	UNIQUE (discord_message_id)
 );
 
-CREATE TABLE chat_message_view
-(
-	id int NOT NULL AUTO_INCREMENT,
-	channel_id text,
-	chat_message_id int,
-	member_id int NOT NULL,
-	PRIMARY KEY (id)
-);
-
 ALTER TABLE chat_message
 	ADD FOREIGN KEY (channel_master_id)
 	REFERENCES channel_master (id)
@@ -87,4 +77,3 @@ ALTER TABLE chat_attachment
 	ON UPDATE RESTRICT
 	ON DELETE RESTRICT
 ;
-
