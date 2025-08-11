@@ -19,14 +19,22 @@ import bot.dto.ChatMessageDto;
 import bot.dto.MemberAlliance;
 import bot.dto.MemberRole;
 import bot.entity.AllianceMember;
+import bot.entity.ChannelMaster;
+import bot.entity.ChatMessageView;
 import bot.model.discord.DIscordEventListener;
 import bot.repository.AllianceMemberRepository;
+import bot.repository.ChannelMasterRepository;
+import bot.repository.ChatMessageViewRepository;
 
 @Service
 public class MemberService implements DIscordEventListener {
 	Logger log = LoggerFactory.getLogger(MemberService.class);
 	@Autowired
 	private AllianceMemberRepository allianceMemberRepository;
+	@Autowired
+	private ChatMessageViewRepository chatMessageViewRepository;
+	@Autowired
+	private ChannelMasterRepository channelMasterRepository;
 	private ModelMapper modelMapper;
 
 	@Transactional
@@ -92,11 +100,12 @@ public class MemberService implements DIscordEventListener {
 	}
 
 	@Transactional
-	public void addOrChangeAllianceMemberDto(AllianceMemberDto allianceMemberDto) {
+	public synchronized void addOrChangeAllianceMemberDto(AllianceMemberDto allianceMemberDto) {
 		AllianceMember allianceMember;
 
-		allianceMember = allianceMemberRepository.findByAyarabuName(allianceMemberDto.getAyarabuName());
-		if (allianceMember == null) {
+		String ayarabuName = allianceMemberDto.getAyarabuName().trim();
+		allianceMember = allianceMemberRepository.findByAyarabuName(ayarabuName);
+		if (allianceMember == null || ayarabuName.isEmpty()) {
 			String discordMemberId = allianceMemberDto.getDiscordMemberId();
 			if (discordMemberId==null || discordMemberId.equals("")) {
 				allianceMember = null;
@@ -107,6 +116,14 @@ public class MemberService implements DIscordEventListener {
 			if (allianceMember == null) {
 				allianceMember = toEntityFromDto(allianceMemberDto);
 				allianceMember = allianceMemberRepository.save(allianceMember);
+				List<ChannelMaster> channelList = channelMasterRepository.findAll();
+				for (ChannelMaster channelMaster : channelList) {
+					ChatMessageView chatMessageView = new ChatMessageView();
+					chatMessageView.setChannelId(channelMaster.getChannelId());
+					chatMessageView.setChatMessageId(0);
+					chatMessageView.setMemberId(allianceMember.getId());
+					chatMessageViewRepository.save(chatMessageView);
+				}
 				log.info("メンバー追加:" + allianceMemberDto);
 			} else {
 				int id = allianceMember.getId();
@@ -152,12 +169,18 @@ public class MemberService implements DIscordEventListener {
 
 	public AllianceMemberDto getAllianceMemberDtoByAyarabuName(String ayarabuName) {
 		AllianceMember allianceMember = allianceMemberRepository.findByAyarabuName(ayarabuName);
-		return modelMapper.map(allianceMember, AllianceMemberDto.class);
+		AllianceMemberDto allianceMemberDto = modelMapper.map(allianceMember, AllianceMemberDto.class);
+		List<ChatMessageView> chatMessageViewList = chatMessageViewRepository.findAllByMemberId(allianceMember.getId());
+		allianceMemberDto.setChatMessageViewList(chatMessageViewList);
+		return allianceMemberDto;
 	}
 
 	public AllianceMemberDto getAllianceMemberDtoByMemberId(Integer memberId) {
 		AllianceMember allianceMember = allianceMemberRepository.findById(memberId).get();
-		return modelMapper.map(allianceMember, AllianceMemberDto.class);
+		AllianceMemberDto allianceMemberDto = modelMapper.map(allianceMember, AllianceMemberDto.class);
+		List<ChatMessageView> chatMessageViewList = chatMessageViewRepository.findAllByMemberId(allianceMember.getId());
+		allianceMemberDto.setChatMessageViewList(chatMessageViewList);
+		return allianceMemberDto;
 	}
 
 	@Override
@@ -184,5 +207,4 @@ public class MemberService implements DIscordEventListener {
 	@Override
 	public void onMessageDelete(String messageId) {
 	}
-
 }

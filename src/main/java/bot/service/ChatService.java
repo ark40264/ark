@@ -138,9 +138,8 @@ public class ChatService implements DIscordEventListener {
 	}
 
 	@Override
-	@Async
 	@Transactional
-	public void onMessageReceived(ChatMessageDto chatMessageDto) {
+	public synchronized void onMessageReceived(ChatMessageDto chatMessageDto) {
 		ChannelMaster channel = channelRepository.findByChannelId(chatMessageDto.getChannelId());
 		String message = chatMessageDto.getMessage().replace("\n", "<br>");
 		chatMessageDto.setMessage(message);
