@@ -30,7 +30,7 @@ let maxSize = 0;
 window.addEventListener("DOMContentLoaded", (event: Event) => {
 	const path: string = window.location.pathname;
 
-	if (path.includes("index")) {
+	if (path == "/") {
 		initIndex();
 	} else if (path.includes("chatHtml")) {
 		initChat();
@@ -43,7 +43,9 @@ window.addEventListener("DOMContentLoaded", (event: Event) => {
 	}
 });
 
-function initIndex() { }
+function initIndex() {
+	existNewMessage();
+}
 
 function initChat() {
 	// アプリケーション起動時にデータを取得して表示する関数を呼び出します
@@ -78,6 +80,26 @@ function initFightingStrength() {
 async function onFightingStrengthInit(): Promise<void> {
 	await axios.get("/fightingStrength/init");
 }
+async function existNewMessage(): Promise<void> {
+	
+	const chatClasseElements = document.querySelectorAll<HTMLElement>('.chatClass');
+	const elementsArray = Array.from(chatClasseElements);
+	for (const htmlElement of elementsArray) {
+		const channelId : string = htmlElement.dataset.channelId as string;
+		const url = "/chat/existNewMessage?channelId="+channelId;
+		const response = await axios.get(url, {
+		});
+		const isNew : Boolean = response.data;
+		if (isNew) {
+			htmlElement.style.color = 'red';
+			const newEle = document.createElement("img") as HTMLImageElement;
+			newEle.src = "/img/new.png";
+			newEle.width = 30;
+			htmlElement.appendChild(newEle);
+		}
+	}
+}
+
 async function onFightingStrengthDownload(): Promise<void> {
 	const url = "/fightingStrength/excel";
 
@@ -178,22 +200,24 @@ async function onSaveFightingStrength(): Promise<void> {
 
 }
 async function onAddMember(): Promise<void> {
-	const ayarabuInput = document.getElementById("ayarabuInput") as HTMLInputElement; // 変数名をdeleteInputからayarabuInputに修正
-	if (!ayarabuInput) { // 要素が存在しない場合のエラーを避ける
-		console.error("ayarabuInput element not found.");
+	const ayarabuNameInput = document.getElementById("ayarabuNameInput") as HTMLInputElement; // 変数名をdeleteInputからayarabuInputに修正
+	if (!ayarabuNameInput) { // 要素が存在しない場合のエラーを避ける
+		console.error("ayarabuNameInput element not found.");
 		return;
 	}
+	const ayarabuIdInput = document.getElementById("ayarabuIdInput") as HTMLInputElement;
+	const allianceSelect = document.getElementById("allianceSelect") as HTMLSelectElement;
 	const memberData: AllianceMemberForm = {
 		id: -1, // 新規追加のため仮のID
 		memberRole: "MEMBER",
 		discordMemberId: "",
 		discordName: "",
-		ayarabuId: "mitsu",
-		ayarabuName: ayarabuInput.value,
-		alliance: "NONE",
+		ayarabuId: ayarabuIdInput.value,
+		ayarabuName: ayarabuNameInput.value,
+		alliance: allianceSelect.value,
 		statementCount: 0,
 		createDate: "",
-		isBot: 0
+		bot: 0
 	};
 	await axios.post(`/member`, memberData);
 	fetchAndDisplayMember();
@@ -208,7 +232,7 @@ interface AllianceMemberForm {
 	alliance: string;
 	statementCount: number;
 	createDate: string;
-	isBot: number;
+	bot: number;
 }
 
 
@@ -292,7 +316,7 @@ async function fetchAndDisplayChatMessage(
 			main.appendChild(quate);
 		}
 		let mainContents: string = "";
-		mainContents += `${chatMessage.message}`;
+		mainContents += `${chatMessage.message}<br>`;
 		message.innerHTML = mainContents;
 		main.appendChild(message);
 		if (
@@ -405,16 +429,17 @@ interface Member {
 	alliance: string;
 	statementCount: number;
 	createDate: string;
+	bot: number;
 }
 async function fetchAndDisplayMember(): Promise<void> {
 	const response = await axios.get<Member[]>(`/member`);
 	const members: Member[] = response.data; // 取得したデータ
-	const memberRoles: string[] = ["LEADER", "MEMBER"];
-	const memberAlliance: string[] = ["MITSU", "FANZA", "NONE"];
+	const memberRoles: string[] = ["LEADER", "SUB_LEADER", "MEMBER"];
+	const memberAlliance: string[] = ["HOKKORI", "HONTO_HOKKORI", "NONE"];
 
 	const memberTable = document.querySelector(
 		"#memberTable tbody"
-	) as HTMLTableSectionElement;
+	) as HTMLElement;
 	memberTable.innerHTML = "";
 	members.forEach((member) => {
 		const row = document.createElement("tr") as HTMLTableRowElement;
@@ -437,13 +462,14 @@ async function fetchAndDisplayMember(): Promise<void> {
 		row.innerHTML = `
 	                    <td>${member.id}</td>
 						<td><select id="memberRoleSelect${member.id}">${roleOptions}</select></td>
-						<td>${member.discordMemberId}</td>
-						<td>${member.discordName}</td>
+						<td contenteditable="true">${member.discordMemberId}</td>
+						<td contenteditable="true">${member.discordName}</td>
 						<td contenteditable="true">${member.ayarabuId}</td>
 						<td contenteditable="true">${member.ayarabuName}</td>
 						<td><select id="memberAllianceSelect${member.id}">${allianceOptions}</select></td>
 	                    <td>${member.statementCount}</td>
 						<td>${member.createDate}</td>
+						<td>${member.bot}</td>
 	                `;
 
 		memberTable.appendChild(row);
@@ -457,7 +483,6 @@ async function onSaveMember(): Promise<void> {
 	// 要素を一つずつ処理
 	for (let i = 1; i < tableRows.length; i++) {
 		const row: HTMLTableRowElement = tableRows.item(i) as HTMLTableRowElement; // または listItems[i]
-		const rowId: string = row.dataset.id + "";
 		const id: number = parseInt(row.cells[0].textContent || "0", 10);
 
 		const memberRoleElement: HTMLSelectElement = document.getElementById(`memberRoleSelect${id}`) as HTMLSelectElement;
@@ -465,7 +490,7 @@ async function onSaveMember(): Promise<void> {
 		const allianceElement = document.getElementById(`memberAllianceSelect${id}`) as HTMLSelectElement;
 		const allianceStr = allianceElement.value;
 
-		const updateMember: Member = {
+		const updateMember: AllianceMemberForm = {
 			id: id,
 			memberRole: memberRoleStr,
 			discordMemberId: row.cells[2].textContent || "",
@@ -475,10 +500,11 @@ async function onSaveMember(): Promise<void> {
 			alliance: allianceStr,
 			statementCount: parseInt(row.cells[7].textContent || "0", 10),
 			createDate: row.cells[8].textContent || "",
+			bot: parseInt(row.cells[9].textContent || "0", 10)
 		};
 
 		console.log("updateMEmber:", updateMember);
-		await axios.put<Member>(`/member`, updateMember, {}).then(function(response) {
+		await axios.put<AllianceMemberForm>(`/member`, updateMember, {}).then(function(response) {
 			fetchAndDisplayMember();
 		});
 	}

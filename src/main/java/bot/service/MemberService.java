@@ -19,14 +19,22 @@ import bot.dto.ChatMessageDto;
 import bot.dto.MemberAlliance;
 import bot.dto.MemberRole;
 import bot.entity.AllianceMember;
+import bot.entity.ChannelMaster;
+import bot.entity.ChatMessageView;
 import bot.model.discord.DIscordEventListener;
 import bot.repository.AllianceMemberRepository;
+import bot.repository.ChannelMasterRepository;
+import bot.repository.ChatMessageViewRepository;
 
 @Service
 public class MemberService implements DIscordEventListener {
 	Logger log = LoggerFactory.getLogger(MemberService.class);
 	@Autowired
 	private AllianceMemberRepository allianceMemberRepository;
+	@Autowired
+	private ChatMessageViewRepository chatMessageViewRepository;
+	@Autowired
+	private ChannelMasterRepository channelMasterRepository;
 	private ModelMapper modelMapper;
 
 	@Transactional
@@ -35,6 +43,25 @@ public class MemberService implements DIscordEventListener {
 		log.info("メンバー削除:" + id);
 	}
 
+	/**
+     * 指定されたユーザー情報（名前・ID・Botフラグ）に基づいて、
+     * ユーザー情報の初期化処理を行う。
+     * 
+     * DB上に該当ユーザー（discordId）が存在しない場合:
+     * デフォルトの {@link AllianceMemberDto} を新規作成し、DBおよびメモリ上のリストに追加する。
+     * このとき、isBotがtrueであれば管理者（LEADER）権限を自動付与する。
+     *
+     * DB上に既に存在する場合:
+     * DBの情報をDTOへ変換し、メモリ上のリストに反映（更新）する。
+     * この処理により、最新のDB情報が同期される。
+     *
+     * 本メソッドは、Bot起動時や初回参加時などに呼ばれ、
+     * ユーザーの存在確認および初期登録・更新を担う。
+     * 
+	 * @param name			Discord上の表示名
+	 * @param discordId	DiscordユーザーID
+	 * @param isBot		Botかどうかを示すフラグ（true の場合、リーダー権限を付与）
+	 */
 	@Async
 	@Transactional
 	public void init(String name, String discordId, boolean isBot) {
@@ -52,12 +79,12 @@ public class MemberService implements DIscordEventListener {
 		AllianceMemberDto allianceMemberDto = new AllianceMemberDto();
 		if (isBot) {
 			allianceMemberDto.setMemberRole(MemberRole.LEADER);
-			allianceMemberDto.setAyarabuId("mitsu");
+			allianceMemberDto.setAyarabuId("ayarabu");
 			allianceMemberDto.setAyarabuName(name);
 		} else {
 			allianceMemberDto.setMemberRole(MemberRole.MEMBER);
-			allianceMemberDto.setAyarabuId("mitsu");
-			allianceMemberDto.setAyarabuName(name);
+			allianceMemberDto.setAyarabuId("");
+			allianceMemberDto.setAyarabuName("");
 		}
 		allianceMemberDto.setBot(false);
 		allianceMemberDto.setCreateDate(ArkApplication.sdf.format(new Date()));
@@ -85,47 +112,53 @@ public class MemberService implements DIscordEventListener {
 	}
 
 	private AllianceMemberDto toDtoFromEntity(AllianceMember allianceMember) {
-		if (allianceMember == null)
+		if (allianceMember == null) {
 			return null;
+		}
 		ModelMapper modelMapper = new ModelMapper();
 		return modelMapper.map(allianceMember, AllianceMemberDto.class);
 	}
 
 	@Transactional
-	public void addOrChangeAllianceMemberDto(AllianceMemberDto allianceMemberDto) {
-		AllianceMember allianceMember;
+	public synchronized void addOrChangeAllianceMemberDto(AllianceMemberDto allianceMemberDto) {
+		// TODO 起動時DBにいてdiscoにいない場合は消す？
 
-		allianceMember = allianceMemberRepository.findByAyarabuName(allianceMemberDto.getAyarabuName());
+		AllianceMember allianceMember = allianceMemberRepository.findByDiscordMemberId(allianceMemberDto.getDiscordMemberId());
 		if (allianceMember == null) {
-			String discordMemberId = allianceMemberDto.getDiscordMemberId();
-			if (discordMemberId==null || discordMemberId.equals("")) {
-				allianceMember = null;
-			} else {
-				allianceMember = allianceMemberRepository.findByDiscordMemberId(allianceMemberDto.getDiscordMemberId());
-			}
-			
+			allianceMember = allianceMemberRepository.findByAyarabuName(allianceMemberDto.getAyarabuName());
 			if (allianceMember == null) {
 				allianceMember = toEntityFromDto(allianceMemberDto);
 				allianceMember = allianceMemberRepository.save(allianceMember);
+
+				List<ChannelMaster> channelList = channelMasterRepository.findAll();
+				for (ChannelMaster channelMaster : channelList) {
+					ChatMessageView chatMessageView = new ChatMessageView();
+					chatMessageView.setChannelId(channelMaster.getChannelId());
+					chatMessageView.setChatMessageId(0);
+					chatMessageView.setMemberId(allianceMember.getId());
+					chatMessageViewRepository.save(chatMessageView);
+				}
+
 				log.info("メンバー追加:" + allianceMemberDto);
 			} else {
 				int id = allianceMember.getId();
 				allianceMember = toEntityFromDto(allianceMemberDto);
 				allianceMember.setId(id);
 				allianceMember = allianceMemberRepository.save(allianceMember);
-				log.info("メンバー更新1:" + allianceMemberDto);
+				log.info("メンバー更新:" + allianceMemberDto);
 			}
 		} else {
 			int id = allianceMember.getId();
 			allianceMember = toEntityFromDto(allianceMemberDto);
 			allianceMember.setId(id);
 			allianceMember = allianceMemberRepository.save(allianceMember);
-			log.info("メンバー更新2:" + allianceMemberDto);
+			log.info("メンバー更新:" + allianceMemberDto);
 		}
 	}
 
 	@Transactional
 	public void removeAllianceMemberDtoByDiscordId(AllianceMemberDto allianceMemberDto) {
+		AllianceMemberDto removeDto = getAllianceMemberDto(allianceMemberDto.getDiscordMemberId());
 		AllianceMember allianceMember = allianceMemberRepository.findByDiscordMemberId(
 				allianceMemberDto.getDiscordMemberId());
 
@@ -152,12 +185,18 @@ public class MemberService implements DIscordEventListener {
 
 	public AllianceMemberDto getAllianceMemberDtoByAyarabuName(String ayarabuName) {
 		AllianceMember allianceMember = allianceMemberRepository.findByAyarabuName(ayarabuName);
-		return modelMapper.map(allianceMember, AllianceMemberDto.class);
+		AllianceMemberDto allianceMemberDto = modelMapper.map(allianceMember, AllianceMemberDto.class);
+		List<ChatMessageView> chatMessageViewList = chatMessageViewRepository.findAllByMemberId(allianceMember.getId());
+		allianceMemberDto.setChatMessageViewList(chatMessageViewList);
+		return allianceMemberDto;
 	}
 
 	public AllianceMemberDto getAllianceMemberDtoByMemberId(Integer memberId) {
 		AllianceMember allianceMember = allianceMemberRepository.findById(memberId).get();
-		return modelMapper.map(allianceMember, AllianceMemberDto.class);
+		AllianceMemberDto allianceMemberDto = modelMapper.map(allianceMember, AllianceMemberDto.class);
+		List<ChatMessageView> chatMessageViewList = chatMessageViewRepository.findAllByMemberId(allianceMember.getId());
+		allianceMemberDto.setChatMessageViewList(chatMessageViewList);
+		return allianceMemberDto;
 	}
 
 	@Override
