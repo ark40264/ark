@@ -6,9 +6,13 @@
 	<title>アークレコード 傭兵団 蜜の味</title>
 	<meta name=description”content="アークレコードの傭兵団「蜜の味」の公式ホームページです。" />
 	<link href="css/style.css" rel="stylesheet" />
+	<script type="module" src="/js/main.js"></script>
+	<meta name="_csrf" th:content="${_csrf.token}" />
+	<meta name="_csrf_header" th:content="${_csrf.headerName}" />
 </head>
 
 <body>
+	<input type="hidden" id="channelId" th:value="-1">
 	<p class="resizeimage">
 		<img src="img/1.jpg" name="imagetop" alt="アークレコードの傭兵団「蜜の味」">
 </p>
